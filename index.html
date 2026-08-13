@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32-S3 Web BLE 測試控制台</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #ffffff;
+            max-width: 450px;
+            width: 100%;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        h2 { margin-top: 0; color: #333; text-align: center; }
+        .status-box {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .status-box.connected {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+        .btn-connect { background-color: #007aff; color: white; }
+        .btn-connect:hover { background-color: #0056b3; }
+        .btn-disconnect { background-color: #757575; color: white; }
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .btn-send { background-color: #34c759; color: white; width: auto; margin-bottom: 0; }
+        .log-box {
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #00ff66;
+            font-family: monospace;
+            padding: 12px;
+            border-radius: 8px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ESP32-S3 Web BLE 測試</h2>
+    
+    <div id="status" class="status-box">未連線</div>
+
+    <button id="btnConnect" class="btn-connect" onclick="connectBLE()">搜尋並連線 ESP32-S3</button>
+    <button id="btnDisconnect" class="btn-disconnect" onclick="disconnectBLE()" style="display:none;">斷開藍牙連線</button>
+
+    <div class="input-group">
+        <input type="text" id="sendInput" placeholder="輸入文字傳給 ESP32..." disabled>
+        <button id="btnSend" class="btn-send" onclick="sendData()" disabled>發送</button>
+    </div>
+
+    <div class="log-box" id="logConsole">等待操作中...\n</div>
+</div>
+
+<script>
+    // UUID 設定（與 ESP32 程式碼保持一致）
+    const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
+    let bleDevice = null;
+    let gattServer = null;
+    let bleCharacteristic = null;
+
+    function log(text) {
+        const console = document.getElementById('logConsole');
+        const now = new Date().toLocaleTimeString();
+        console.innerText += `[${now}] ${text}\n`;
+        console.scrollTop = console.scrollHeight;
+    }
+
+    function updateUI(isConnected) {
+        const statusBox = document.getElementById('status');
+        const btnConnect = document.getElementById('btnConnect');
+        const btnDisconnect = document.getElementById('btnDisconnect');
+        const sendInput = document.getElementById('sendInput');
+        const btnSend = document.getElementById('btnSend');
+
+        if (isConnected) {
+            statusBox.innerText = "已成功連線至 ESP32-S3";
+            statusBox.classList.add('connected');
+            btnConnect.style.display = 'none';
+            btnDisconnect.style.display = 'block';
+            sendInput.disabled = false;
+            btnSend.disabled = false;
+        } else {
+            statusBox.innerText = "未連線";
+            statusBox.classList.remove('connected');
+            btnConnect.style.display = 'block';
+            btnDisconnect.style.display = 'none';
+            sendInput.disabled = true;
+            btnSend.disabled = true;
+        }
+    }
+
+    async function connectBLE() {
+        if (!navigator.bluetooth) {
+            alert("你的瀏覽器不支援 Web BLE！請使用 Chrome、Edge 或在 iOS 上使用 Bluefy 瀏覽器。");
+            log("錯誤：瀏覽器不支援 Web BLE");
+            return;
+        }
+
+        try {
+            log("正在掃描廣播 UUID 的藍牙裝置...");
+            bleDevice = await navigator.bluetooth.requestDevice({
+                filters: [{ services: [SERVICE_UUID] }]
+            });
+
+            log(`找到裝置: ${bleDevice.name}`);
+            bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+            log("連線至 GATT Server 中...");
+            gattServer = await bleDevice.gatt.connect();
+
+            log("獲取 BLE Service 中...");
+            const service = await gattServer.getPrimaryService(SERVICE_UUID);
+
+            log("獲取 BLE Characteristic 中...");
+            bleCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+            // 開啟 Notify 監聽 (接收 ESP32 心跳包)
+            await bleCharacteristic.startNotifications();
+            bleCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
+
+            log(">>> 成功連線！可以進行雙向通訊。");
+            updateUI(true);
+
+        } catch (error) {
+            log(`連線失敗或取消: ${error}`);
+            updateUI(false);
+        }
+    }
+
+    function handleNotifications(event) {
+        let value = new TextDecoder().decode(event.target.value);
+        log(`[收到 ESP32 Notify] ${value}`);
+    }
+
+    async function sendData() {
+        const input = document.getElementById('sendInput');
+        const text = input.value;
+        if (!text || !bleCharacteristic) return;
+
+        try {
+            let encoder = new TextEncoder();
+            await bleCharacteristic.writeValue(encoder.encode(text));
+            log(`[發送成功] ${text}`);
+            input.value = '';
+        } catch (error) {
+            log(`發送失敗: ${error}`);
+        }
+    }
+
+    function disconnectBLE() {
+        if (bleDevice && bleDevice.gatt.connected) {
+            log("正在手動斷開連線...");
+            bleDevice.gatt.disconnect();
+        }
+    }
+
+    function onDisconnected() {
+        log(">>> BLE 連線已中斷！");
+        updateUI(false);
+    }
+</script>
+
+</body>
+</html>
