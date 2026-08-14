@@ -1,29 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        ESP32-S3 NFC + BLE 控制台
-    </title>
-
+    <title>ESP32-S3 NFC + BLE 測試</title>
 
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
         body {
-
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
@@ -34,23 +18,17 @@
                 sans-serif;
 
             background-color: #f4f6f9;
-
             margin: 0;
-
             padding: 20px;
 
             display: flex;
-
             justify-content: center;
         }
 
-
         .container {
-
             background: #ffffff;
 
             max-width: 480px;
-
             width: 100%;
 
             padding: 25px;
@@ -61,45 +39,28 @@
                 0 4px 15px rgba(0,0,0,0.08);
         }
 
-
         h2 {
-
             margin-top: 0;
-
             color: #333;
-
             text-align: center;
         }
 
-
         .section {
-
             margin-top: 20px;
-
             padding-top: 20px;
 
-            border-top: 1px solid #eeeeee;
+            border-top: 1px solid #eee;
         }
 
-
         .section-title {
-
             font-size: 15px;
-
             font-weight: bold;
 
             margin-bottom: 10px;
-
             color: #444;
         }
 
-
-        /* =========================================
-           Status
-           ========================================= */
-
         .status-box {
-
             padding: 12px;
 
             border-radius: 8px;
@@ -111,33 +72,20 @@
             margin-bottom: 20px;
 
             background-color: #ffebee;
-
             color: #c62828;
         }
 
-
         .status-box.connected {
-
             background-color: #e8f5e9;
-
             color: #2e7d32;
         }
 
-
         .status-box.scanning {
-
             background-color: #fff8e1;
-
             color: #f57f17;
         }
 
-
-        /* =========================================
-           Buttons
-           ========================================= */
-
         button {
-
             width: 100%;
 
             padding: 12px;
@@ -157,81 +105,40 @@
             transition: 0.2s;
         }
 
-
         button:disabled {
-
             opacity: 0.45;
-
             cursor: not-allowed;
         }
 
-
         .btn-nfc {
-
             background-color: #ff9500;
-
             color: white;
         }
 
-
         .btn-nfc:hover {
-
             background-color: #e68600;
         }
 
-
         .btn-connect {
-
             background-color: #007aff;
-
             color: white;
         }
 
-
         .btn-connect:hover {
-
             background-color: #0056b3;
         }
 
-
         .btn-disconnect {
-
             background-color: #757575;
-
             color: white;
         }
-
-
-        .btn-send {
-
-            background-color: #34c759;
-
-            color: white;
-        }
-
-
-        .btn-nfc-send {
-
-            background-color: #af52de;
-
-            color: white;
-        }
-
 
         .btn-stop {
-
             background-color: #ff3b30;
-
             color: white;
         }
 
-
-        /* =========================================
-           NFC Result
-           ========================================= */
-
         .nfc-result {
-
             background-color: #f5f5f5;
 
             padding: 12px;
@@ -245,17 +152,9 @@
             word-break: break-all;
 
             margin-top: 10px;
-
-            line-height: 1.7;
         }
 
-
-        /* =========================================
-           Input
-           ========================================= */
-
         .input-group {
-
             display: flex;
 
             gap: 8px;
@@ -263,9 +162,7 @@
             margin-top: 15px;
         }
 
-
         input[type="text"] {
-
             flex: 1;
 
             padding: 10px;
@@ -275,27 +172,18 @@
             border-radius: 8px;
 
             font-size: 14px;
-
-            min-width: 0;
         }
 
-
-        .input-group button {
+        .btn-send {
+            background-color: #34c759;
+            color: white;
 
             width: auto;
 
             margin-bottom: 0;
-
-            white-space: nowrap;
         }
 
-
-        /* =========================================
-           Log
-           ========================================= */
-
         .log-box {
-
             margin-top: 20px;
 
             background: #1e1e1e;
@@ -308,7 +196,7 @@
 
             border-radius: 8px;
 
-            height: 250px;
+            height: 220px;
 
             overflow-y: auto;
 
@@ -317,123 +205,81 @@
             white-space: pre-wrap;
         }
 
-
-        /* =========================================
-           Info
-           ========================================= */
-
         .info {
-
             font-size: 13px;
-
             color: #666;
 
             line-height: 1.6;
 
             margin-top: 8px;
         }
-
-
-        code {
-
-            background: #eeeeee;
-
-            padding: 2px 5px;
-
-            border-radius: 4px;
-
-            font-family: monospace;
-        }
-
     </style>
-
 </head>
-
 
 <body>
 
-
 <div class="container">
 
+    <h2>ESP32-S3 NFC + BLE</h2>
 
-    <h2>
-        ESP32-S3 NFC + BLE
-    </h2>
+    <!-- ========================= -->
+    <!-- 狀態 -->
+    <!-- ========================= -->
 
-
-    <!-- =====================================================
-         Status
-         ===================================================== -->
-
-    <div
-        id="status"
-        class="status-box"
-    >
+    <div id="status"
+         class="status-box">
         未連線
     </div>
 
 
-    <!-- =====================================================
-         NFC
-         ===================================================== -->
+    <!-- ========================= -->
+    <!-- NFC -->
+    <!-- ========================= -->
 
     <div class="section">
 
         <div class="section-title">
-
             ① NFC 設備識別
-
         </div>
-
 
         <button
             id="btnNFC"
             class="btn-nfc"
-            onclick="startNFC()"
-        >
-            開始 NFC 掃描
-        </button>
+            onclick="startNFC()">
 
+            開始 NFC 掃描
+
+        </button>
 
         <button
             id="btnStopNFC"
             class="btn-stop"
             onclick="stopNFC()"
-            style="display:none;"
-        >
-            停止 NFC 掃描
-        </button>
+            style="display:none;">
 
+            停止 NFC 掃描
+
+        </button>
 
         <div class="nfc-result">
 
-            <strong>
-                NFC 狀態：
-            </strong>
+            <strong>NFC 狀態：</strong>
 
             <span id="nfcStatus">
                 尚未掃描
             </span>
 
+            <br><br>
 
-            <br>
-
-
-            <strong>
-                設備名稱：
-            </strong>
+            <strong>設備名稱：</strong>
 
             <span id="nfcDeviceName">
                 -
             </span>
 
+            <br><br>
 
-            <br>
-
-
-            <strong>
-                NFC 原始資料：
-            </strong>
+            <strong>NFC 原始資料：</strong>
 
             <span id="nfcRaw">
                 -
@@ -441,90 +287,67 @@
 
         </div>
 
-
         <div class="info">
 
-            NFC Tag 建議先寫入：
-
+            請先將 NFC Tag 寫入：
             <br>
 
-            <code>
-                ESP32S3_BLE_Test
-            </code>
+            <code>ESP32S3_BLE_Test</code>
 
         </div>
-
-
-        <br>
-
-
-        <button
-            id="btnSendNFC"
-            class="btn-nfc-send"
-            onclick="sendNFCData()"
-            disabled
-        >
-            發送 NFC 內容給 ESP32
-        </button>
 
     </div>
 
 
-    <!-- =====================================================
-         BLE
-         ===================================================== -->
+    <!-- ========================= -->
+    <!-- BLE -->
+    <!-- ========================= -->
 
     <div class="section">
 
         <div class="section-title">
-
             ② BLE 連線
-
         </div>
-
 
         <button
             id="btnConnect"
             class="btn-connect"
-            onclick="connectBLE()"
-        >
-            搜尋並連線 ESP32-S3
-        </button>
+            onclick="connectBLE()">
 
+            搜尋並連線 ESP32-S3
+
+        </button>
 
         <button
             id="btnDisconnect"
             class="btn-disconnect"
             onclick="disconnectBLE()"
-            style="display:none;"
-        >
-            斷開藍牙連線
-        </button>
+            style="display:none;">
 
+            斷開藍牙連線
+
+        </button>
 
         <div class="info">
 
-            NFC 讀取成功後，
-
-            再按下「搜尋並連線 ESP32-S3」。
+            NFC 掃描成功後，
+            按下上面的連線按鈕，
+            選擇對應的 ESP32-S3。
 
         </div>
 
     </div>
 
 
-    <!-- =====================================================
-         BLE Send
-         ===================================================== -->
+    <!-- ========================= -->
+    <!-- BLE Data -->
+    <!-- ========================= -->
 
     <div class="section">
 
         <div class="section-title">
-
-            ③ 發送文字
-
+            ③ BLE 資料測試
         </div>
-
 
         <div class="input-group">
 
@@ -535,741 +358,652 @@
                 disabled
             >
 
-
             <button
                 id="btnSend"
                 class="btn-send"
                 onclick="sendData()"
-                disabled
-            >
+                disabled>
+
                 發送
+
             </button>
 
         </div>
 
-
-        <div class="info">
-
-            手機 → ESP32-S3
-
-            <br>
-
-            ESP32-S3 只接收，不回傳。
-
-        </div>
-
     </div>
 
 
-    <!-- =====================================================
-         Log
-         ===================================================== -->
+    <!-- ========================= -->
+    <!-- Log -->
+    <!-- ========================= -->
 
     <div class="section">
 
         <div class="section-title">
-
             Debug Log
-
         </div>
-
 
         <div
             class="log-box"
-            id="logConsole"
-        >
+            id="logConsole">
+
             等待操作中...
+
         </div>
 
     </div>
-
 
 </div>
 
 
 <script>
 
+    // =========================================================
+    // BLE UUID
+    // =========================================================
 
-// ============================================================
-// BLE UUID
-// ============================================================
+    const SERVICE_UUID =
+        "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
 
-const SERVICE_UUID =
-    "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHARACTERISTIC_UUID =
+        "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
 
-const CHARACTERISTIC_UUID =
-    "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+    // =========================================================
+    // 全域變數
+    // =========================================================
 
+    let bleDevice = null;
 
-// ============================================================
-// Global Variables
-// ============================================================
+    let gattServer = null;
 
-let bleDevice = null;
+    let bleCharacteristic = null;
 
-let gattServer = null;
+    let nfcReader = null;
 
-let bleCharacteristic = null;
+    let nfcScanning = false;
 
-let nfcReader = null;
+    let targetDeviceName = null;
 
-let nfcScanning = false;
 
-let targetDeviceName = null;
+    // =========================================================
+    // Log
+    // =========================================================
 
-let nfcContent = "";
+    function log(text) {
 
+        const consoleBox =
+            document.getElementById("logConsole");
 
-// ============================================================
-// Log
-// ============================================================
+        const now =
+            new Date().toLocaleTimeString();
 
-function log(text) {
+        consoleBox.innerText +=
+            `[${now}] ${text}\n`;
 
-    const consoleBox =
-        document.getElementById(
-            "logConsole"
-        );
-
-
-    const now =
-        new Date().toLocaleTimeString();
-
-
-    consoleBox.innerText +=
-        `[${now}] ${text}\n`;
-
-
-    consoleBox.scrollTop =
-        consoleBox.scrollHeight;
-}
-
-
-// ============================================================
-// Update UI
-// ============================================================
-
-function updateUI(isConnected) {
-
-    const statusBox =
-        document.getElementById(
-            "status"
-        );
-
-
-    const btnConnect =
-        document.getElementById(
-            "btnConnect"
-        );
-
-
-    const btnDisconnect =
-        document.getElementById(
-            "btnDisconnect"
-        );
-
-
-    const sendInput =
-        document.getElementById(
-            "sendInput"
-        );
-
-
-    const btnSend =
-        document.getElementById(
-            "btnSend"
-        );
-
-
-    const btnSendNFC =
-        document.getElementById(
-            "btnSendNFC"
-        );
-
-
-    if (isConnected) {
-
-        statusBox.innerText =
-            "已成功連線至 ESP32-S3";
-
-
-        statusBox.classList.remove(
-            "scanning"
-        );
-
-
-        statusBox.classList.add(
-            "connected"
-        );
-
-
-        btnConnect.style.display =
-            "none";
-
-
-        btnDisconnect.style.display =
-            "block";
-
-
-        sendInput.disabled =
-            false;
-
-
-        btnSend.disabled =
-            false;
-
-
-        // NFC 有資料才可以發送
-
-        btnSendNFC.disabled =
-            nfcContent.length === 0;
-
-    }
-
-    else {
-
-        statusBox.innerText =
-            "未連線";
-
-
-        statusBox.classList.remove(
-            "connected"
-        );
-
-
-        statusBox.classList.remove(
-            "scanning"
-        );
-
-
-        btnConnect.style.display =
-            "block";
-
-
-        btnDisconnect.style.display =
-            "none";
-
-
-        sendInput.disabled =
-            true;
-
-
-        btnSend.disabled =
-            true;
-
-
-        btnSendNFC.disabled =
-            true;
-    }
-}
-
-
-// ============================================================
-// NFC
-// ============================================================
-
-async function startNFC() {
-
-
-    // --------------------------------------------------------
-    // 檢查 Web NFC
-    // --------------------------------------------------------
-
-    if (!("NDEFReader" in window)) {
-
-        alert(
-            "這個瀏覽器不支援 Web NFC。\n\n" +
-            "請使用支援 Web NFC 的 Android Chrome，" +
-            "並確認網站使用 HTTPS。"
-        );
-
-
-        log(
-            "錯誤：瀏覽器不支援 Web NFC"
-        );
-
-
-        return;
+        consoleBox.scrollTop =
+            consoleBox.scrollHeight;
     }
 
 
-    if (nfcScanning) {
+    // =========================================================
+    // UI
+    // =========================================================
 
-        log(
-            "NFC 已經正在掃描"
-        );
+    function updateUI(isConnected) {
 
-        return;
+        const statusBox =
+            document.getElementById("status");
+
+        const btnConnect =
+            document.getElementById("btnConnect");
+
+        const btnDisconnect =
+            document.getElementById("btnDisconnect");
+
+        const sendInput =
+            document.getElementById("sendInput");
+
+        const btnSend =
+            document.getElementById("btnSend");
+
+
+        if (isConnected) {
+
+            statusBox.innerText =
+                "已成功連線至 ESP32-S3";
+
+            statusBox.classList.remove("scanning");
+
+            statusBox.classList.add("connected");
+
+
+            btnConnect.style.display =
+                "none";
+
+            btnDisconnect.style.display =
+                "block";
+
+
+            sendInput.disabled =
+                false;
+
+            btnSend.disabled =
+                false;
+
+        }
+
+        else {
+
+            statusBox.innerText =
+                "未連線";
+
+            statusBox.classList.remove(
+                "connected"
+            );
+
+            statusBox.classList.remove(
+                "scanning"
+            );
+
+
+            btnConnect.style.display =
+                "block";
+
+            btnDisconnect.style.display =
+                "none";
+
+
+            sendInput.disabled =
+                true;
+
+            btnSend.disabled =
+                true;
+        }
     }
 
 
-    try {
+    // =========================================================
+    // NFC
+    // =========================================================
 
-        nfcReader =
-            new NDEFReader();
+    async function startNFC() {
 
+        // 檢查 Web NFC
 
-        await nfcReader.scan();
+        if (!("NDEFReader" in window)) {
 
+            alert(
+                "這個瀏覽器不支援 Web NFC。\n\n" +
+                "目前請使用支援 Web NFC 的 Android Chrome，" +
+                "並且網站必須使用 HTTPS。"
+            );
 
-        nfcScanning = true;
+            log(
+                "錯誤：瀏覽器不支援 Web NFC"
+            );
 
-
-        document.getElementById(
-            "btnNFC"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "btnStopNFC"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "nfcStatus"
-        ).innerText =
-            "等待 NFC Tag...";
+            return;
+        }
 
 
-        log(
-            "NFC 掃描已開始"
-        );
+        if (nfcScanning) {
+
+            log("NFC 已經正在掃描");
+
+            return;
+        }
 
 
-        log(
-            "請把手機靠近 NFC Tag"
-        );
+        try {
+
+            nfcReader =
+                new NDEFReader();
 
 
-        // ----------------------------------------------------
-        // NFC Reading
-        // ----------------------------------------------------
-
-        nfcReader.addEventListener(
-            "reading",
-            ({ message, serialNumber }) => {
+            await nfcReader.scan();
 
 
-                log(
-                    ">>> 偵測到 NFC Tag"
-                );
+            nfcScanning = true;
 
 
-                if (serialNumber) {
+            document.getElementById(
+                "btnNFC"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "btnStopNFC"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "nfcStatus"
+            ).innerText =
+                "等待 NFC Tag...";
+
+
+            log(
+                "NFC 掃描已開始，請把手機靠近 NFC Tag"
+            );
+
+
+            // -------------------------------------------------
+            // NFC Message
+            // -------------------------------------------------
+
+            nfcReader.addEventListener(
+                "reading",
+                ({ message, serialNumber }) => {
 
                     log(
-                        "NFC Serial Number: " +
-                        serialNumber
-                    );
-                }
-
-
-                let detectedName = null;
-
-                let rawData = [];
-
-
-                // ------------------------------------------------
-                // 讀取 NDEF Records
-                // ------------------------------------------------
-
-                for (
-                    const record of message.records
-                ) {
-
-
-                    log(
-                        "NDEF Record Type: " +
-                        record.recordType
+                        ">>> 偵測到 NFC Tag"
                     );
 
 
-                    // --------------------------------------------
-                    // Text Record
-                    // --------------------------------------------
+                    if (serialNumber) {
 
-                    if (
-                        record.recordType ===
-                        "text"
-                    ) {
-
-                        try {
-
-                            const text =
-                                record.data
-                                    ? new TextDecoder(
-                                        record.encoding ||
-                                        "utf-8"
-                                    ).decode(
-                                        record.data
-                                    )
-                                    : "";
-
-
-                            const cleanText =
-                                text.trim();
-
-
-                            log(
-                                "NFC Text: " +
-                                cleanText
-                            );
-
-
-                            rawData.push(
-                                cleanText
-                            );
-
-
-                            if (
-                                cleanText.length > 0
-                            ) {
-
-                                detectedName =
-                                    cleanText;
-                            }
-
-                        }
-
-                        catch (error) {
-
-                            log(
-                                "Text Record 讀取失敗：" +
-                                error
-                            );
-                        }
-
+                        log(
+                            "NFC Serial Number: " +
+                            serialNumber
+                        );
                     }
 
 
-                    // --------------------------------------------
-                    // URL Record
-                    // --------------------------------------------
+                    let detectedName = null;
 
-                    else if (
-                        record.recordType ===
-                        "url"
+                    let rawData = [];
+
+
+                    // -----------------------------------------
+                    // 讀取所有 NDEF Records
+                    // -----------------------------------------
+
+                    for (
+                        const record of message.records
                     ) {
 
-                        try {
+                        log(
+                            "NDEF Record Type: " +
+                            record.recordType
+                        );
 
-                            const url =
-                                record.data
-                                    ? new TextDecoder()
-                                        .decode(
+
+                        // -------------------------------------
+                        // Text Record
+                        // -------------------------------------
+
+                        if (
+                            record.recordType ===
+                            "text"
+                        ) {
+
+                            try {
+
+                                const text =
+                                    record.data
+                                        ? new TextDecoder(
+                                            record.encoding ||
+                                            "utf-8"
+                                        ).decode(
                                             record.data
                                         )
-                                    : "";
+                                        : "";
 
-
-                            log(
-                                "NFC URL: " +
-                                url
-                            );
-
-
-                            rawData.push(
-                                url
-                            );
-
-
-                            detectedName =
-                                url;
-
-                        }
-
-                        catch (error) {
-
-                            log(
-                                "URL Record 讀取失敗：" +
-                                error
-                            );
-                        }
-
-                    }
-
-
-                    // --------------------------------------------
-                    // Unknown Record
-                    // --------------------------------------------
-
-                    else {
-
-                        try {
-
-                            if (
-                                record.data
-                            ) {
-
-                                const data =
-                                    new Uint8Array(
-                                        record.data
-                                    );
-
-
-                                const hex =
-                                    Array.from(
-                                        data
-                                    )
-                                    .map(
-                                        b =>
-                                            b
-                                                .toString(16)
-                                                .padStart(
-                                                    2,
-                                                    "0"
-                                                )
-                                    )
-                                    .join(" ");
+                                log(
+                                    "NFC Text: " +
+                                    text
+                                );
 
 
                                 rawData.push(
-                                    hex
+                                    text
+                                );
+
+
+                                if (text.trim()) {
+
+                                    detectedName =
+                                        text.trim();
+                                }
+
+                            }
+
+                            catch (error) {
+
+                                log(
+                                    "讀取 Text Record 失敗: " +
+                                    error
                                 );
                             }
 
                         }
 
-                        catch (error) {
 
-                            log(
-                                "未知 NFC Record 讀取失敗"
-                            );
+                        // -------------------------------------
+                        // URI Record
+                        // -------------------------------------
+
+                        else if (
+                            record.recordType ===
+                            "url"
+                        ) {
+
+                            try {
+
+                                const url =
+                                    record.data
+                                        ? new TextDecoder()
+                                            .decode(
+                                                record.data
+                                            )
+                                        : "";
+
+                                log(
+                                    "NFC URL: " +
+                                    url
+                                );
+
+
+                                rawData.push(
+                                    url
+                                );
+
+
+                                /*
+                                 * 如果 NFC 裡面是：
+                                 *
+                                 * myapp://device/
+                                 * ESP32S3_BLE_Test
+                                 *
+                                 * 可以在這裡進一步解析。
+                                 */
+
+                                detectedName =
+                                    url;
+
+                            }
+
+                            catch (error) {
+
+                                log(
+                                    "讀取 URL Record 失敗: " +
+                                    error
+                                );
+                            }
+
+                        }
+
+
+                        // -------------------------------------
+                        // 其他 Record
+                        // -------------------------------------
+
+                        else {
+
+                            try {
+
+                                if (record.data) {
+
+                                    const data =
+                                        new Uint8Array(
+                                            record.data
+                                        );
+
+                                    rawData.push(
+                                        Array.from(data)
+                                            .map(
+                                                b =>
+                                                    b
+                                                        .toString(16)
+                                                        .padStart(
+                                                            2,
+                                                            "0"
+                                                        )
+                                            )
+                                            .join(" ")
+                                    );
+                                }
+
+                            }
+
+                            catch (error) {
+
+                                log(
+                                    "讀取未知 Record 失敗"
+                                );
+                            }
                         }
                     }
+
+
+                    // -------------------------------------------------
+                    // NFC 結果
+                    // -------------------------------------------------
+
+                    if (detectedName) {
+
+                        targetDeviceName =
+                            detectedName;
+
+
+                        document.getElementById(
+                            "nfcStatus"
+                        ).innerText =
+                            "NFC 偵測成功";
+
+
+                        document.getElementById(
+                            "nfcDeviceName"
+                        ).innerText =
+                            targetDeviceName;
+
+
+                        document.getElementById(
+                            "nfcRaw"
+                        ).innerText =
+                            rawData.join(
+                                " | "
+                            );
+
+
+                        log(
+                            "NFC 指定設備：" +
+                            targetDeviceName
+                        );
+
+
+                        log(
+                            "現在可以按「搜尋並連線 ESP32-S3」"
+                        );
+
+                    }
+
+                    else {
+
+                        log(
+                            "NFC Tag 中沒有找到設備名稱"
+                        );
+
+                    }
+
                 }
+            );
 
 
-                // ------------------------------------------------
-                // NFC Result
-                // ------------------------------------------------
+            // -------------------------------------------------
+            // NFC Error
+            // -------------------------------------------------
 
-                if (detectedName) {
+            nfcReader.addEventListener(
+                "readingerror",
+                () => {
 
-                    targetDeviceName =
-                        detectedName;
-
-
-                    nfcContent =
-                        detectedName;
-
+                    log(
+                        "NFC 讀取錯誤"
+                    );
 
                     document.getElementById(
                         "nfcStatus"
                     ).innerText =
-                        "NFC 偵測成功";
-
-
-                    document.getElementById(
-                        "nfcDeviceName"
-                    ).innerText =
-                        targetDeviceName;
-
-
-                    document.getElementById(
-                        "nfcRaw"
-                    ).innerText =
-                        rawData.join(
-                            " | "
-                        );
-
-
-                    log(
-                        "NFC 內容：" +
-                        nfcContent
-                    );
-
-
-                    log(
-                        "NFC 設備名稱：" +
-                        targetDeviceName
-                    );
-
-
-                    // 如果 BLE 已連線
-                    // 啟用發送 NFC 按鈕
-
-                    if (
-                        bleDevice &&
-                        bleDevice.gatt &&
-                        bleDevice.gatt.connected
-                    ) {
-
-                        document.getElementById(
-                            "btnSendNFC"
-                        ).disabled =
-                            false;
-                    }
-
-
-                    log(
-                        "NFC 讀取完成"
-                    );
-
+                        "讀取失敗";
                 }
+            );
 
-                else {
+        }
 
-                    log(
-                        "NFC Tag 沒有找到文字資料"
-                    );
-                }
+        catch (error) {
 
-            }
-        );
-
-
-        // ----------------------------------------------------
-        // NFC Error
-        // ----------------------------------------------------
-
-        nfcReader.addEventListener(
-            "readingerror",
-            () => {
-
-                log(
-                    "NFC 讀取錯誤"
-                );
+            log(
+                "NFC 啟動失敗：" +
+                error
+            );
 
 
-                document.getElementById(
-                    "nfcStatus"
-                ).innerText =
-                    "讀取失敗";
-            }
-        );
+            document.getElementById(
+                "nfcStatus"
+            ).innerText =
+                "NFC 啟動失敗";
 
+
+            nfcScanning = false;
+        }
     }
 
-    catch (error) {
 
-        log(
-            "NFC 啟動失敗：" +
-            error
-        );
+    // =========================================================
+    // Stop NFC
+    // =========================================================
+
+    function stopNFC() {
+
+        /*
+         * Web NFC 沒有在所有瀏覽器實作
+         * reader.abort() 的完全一致行為，
+         * 因此這裡主要更新 UI。
+         */
+
+        nfcScanning = false;
+
+
+        document.getElementById(
+            "btnNFC"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "btnStopNFC"
+        ).style.display =
+            "none";
 
 
         document.getElementById(
             "nfcStatus"
         ).innerText =
-            "NFC 啟動失敗";
-
-
-        nfcScanning = false;
-    }
-}
-
-
-// ============================================================
-// Stop NFC
-// ============================================================
-
-function stopNFC() {
-
-    nfcScanning = false;
-
-
-    document.getElementById(
-        "btnNFC"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "btnStopNFC"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "nfcStatus"
-    ).innerText =
-        "已停止";
-
-
-    log(
-        "NFC 掃描停止"
-    );
-}
-
-
-// ============================================================
-// BLE Connect
-// ============================================================
-
-async function connectBLE() {
-
-
-    // --------------------------------------------------------
-    // Browser Support
-    // --------------------------------------------------------
-
-    if (!navigator.bluetooth) {
-
-        alert(
-            "你的瀏覽器不支援 Web Bluetooth。"
-        );
+            "已停止";
 
 
         log(
-            "錯誤：瀏覽器不支援 Web Bluetooth"
+            "NFC 掃描停止"
         );
-
-
-        return;
     }
 
 
-    try {
+    // =========================================================
+    // BLE Connect
+    // =========================================================
 
-        log(
-            "正在搜尋 BLE 裝置..."
-        );
+    async function connectBLE() {
 
+        if (!navigator.bluetooth) {
 
-        // ----------------------------------------------------
-        // NFC 已經取得設備名稱
-        // ----------------------------------------------------
-
-        if (targetDeviceName) {
-
-            log(
-                "NFC 指定設備：" +
-                targetDeviceName
+            alert(
+                "你的瀏覽器不支援 Web Bluetooth。\n\n" +
+                "請使用支援 Web Bluetooth 的瀏覽器。"
             );
 
 
-            try {
+            log(
+                "錯誤：瀏覽器不支援 Web Bluetooth"
+            );
 
-                bleDevice =
-                    await navigator.bluetooth.requestDevice({
+            return;
+        }
 
-                        filters: [
-                            {
-                                name:
-                                    targetDeviceName
-                            }
-                        ],
 
-                        optionalServices: [
-                            SERVICE_UUID
-                        ]
-                    });
+        try {
 
-            }
+            log(
+                "正在搜尋 BLE 裝置..."
+            );
 
-            catch (nameFilterError) {
+
+            /*
+             * 如果 NFC 已經讀到設備名稱，
+             * 這裡會嘗試只顯示對應名稱。
+             *
+             * 但是 Web Bluetooth 對 name filter
+             * 有瀏覽器相容性差異。
+             *
+             * 所以同時使用 Service UUID。
+             */
+
+            if (targetDeviceName) {
 
                 log(
-                    "名稱搜尋失敗"
+                    "NFC 指定設備：" +
+                    targetDeviceName
                 );
 
 
+                try {
+
+                    bleDevice =
+                        await navigator.bluetooth.requestDevice({
+
+                            filters: [
+                                {
+                                    name:
+                                        targetDeviceName
+                                }
+                            ],
+
+                            optionalServices: [
+                                SERVICE_UUID
+                            ]
+                        });
+
+                }
+
+                catch (nameFilterError) {
+
+                    log(
+                        "名稱搜尋失敗，改用 Service UUID 搜尋..."
+                    );
+
+
+                    bleDevice =
+                        await navigator.bluetooth.requestDevice({
+
+                            filters: [
+                                {
+                                    services: [
+                                        SERVICE_UUID
+                                    ]
+                                }
+                            ]
+                        });
+                }
+
+            }
+
+            else {
+
                 log(
-                    "改用 Service UUID 搜尋..."
+                    "尚未讀取 NFC，搜尋所有符合 Service UUID 的 ESP32..."
                 );
 
 
@@ -1286,379 +1020,282 @@ async function connectBLE() {
                     });
             }
 
+
+            if (!bleDevice) {
+
+                log(
+                    "沒有選擇 BLE 裝置"
+                );
+
+                return;
+            }
+
+
+            log(
+                "找到裝置：" +
+                (bleDevice.name || "未知名稱")
+            );
+
+
+            // -------------------------------------------------
+            // 監聽斷線
+            // -------------------------------------------------
+
+            bleDevice.addEventListener(
+                "gattserverdisconnected",
+                onDisconnected
+            );
+
+
+            // -------------------------------------------------
+            // GATT Connect
+            // -------------------------------------------------
+
+            log(
+                "正在連線至 GATT Server..."
+            );
+
+
+            gattServer =
+                await bleDevice.gatt.connect();
+
+
+            log(
+                "GATT Server 連線成功"
+            );
+
+
+            // -------------------------------------------------
+            // Service
+            // -------------------------------------------------
+
+            log(
+                "正在取得 BLE Service..."
+            );
+
+
+            const service =
+                await gattServer.getPrimaryService(
+                    SERVICE_UUID
+                );
+
+
+            log(
+                "BLE Service OK"
+            );
+
+
+            // -------------------------------------------------
+            // Characteristic
+            // -------------------------------------------------
+
+            log(
+                "正在取得 BLE Characteristic..."
+            );
+
+
+            bleCharacteristic =
+                await service.getCharacteristic(
+                    CHARACTERISTIC_UUID
+                );
+
+
+            log(
+                "BLE Characteristic OK"
+            );
+
+
+            // -------------------------------------------------
+            // Notify
+            // -------------------------------------------------
+
+            log(
+                "啟用 Notify..."
+            );
+
+
+            await bleCharacteristic.startNotifications();
+
+
+            bleCharacteristic.addEventListener(
+                "characteristicvaluechanged",
+                handleNotifications
+            );
+
+
+            log(
+                "Notify 已啟用"
+            );
+
+
+            // -------------------------------------------------
+            // 成功
+            // -------------------------------------------------
+
+            log(
+                "================================"
+            );
+
+            log(
+                ">>> ESP32-S3 BLE 連線成功！"
+            );
+
+            log(
+                ">>> NFC + BLE 流程完成"
+            );
+
+            log(
+                "================================"
+            );
+
+
+            updateUI(true);
+
         }
 
-        else {
+        catch (error) {
 
             log(
-                "沒有 NFC 設備名稱"
+                "BLE 連線失敗：" +
+                error
             );
 
 
+            updateUI(false);
+        }
+    }
+
+
+    // =========================================================
+    // BLE Notify
+    // =========================================================
+
+    function handleNotifications(event) {
+
+        try {
+
+            const value =
+                new TextDecoder()
+                    .decode(
+                        event.target.value
+                    );
+
+
             log(
-                "使用 Service UUID 搜尋 BLE..."
+                "[ESP32 Notify] " +
+                value
             );
 
-
-            bleDevice =
-                await navigator.bluetooth.requestDevice({
-
-                    filters: [
-                        {
-                            services: [
-                                SERVICE_UUID
-                            ]
-                        }
-                    ]
-                });
         }
 
-
-        // ----------------------------------------------------
-        // Device
-        // ----------------------------------------------------
-
-        if (!bleDevice) {
+        catch (error) {
 
             log(
-                "沒有選擇 BLE 裝置"
+                "Notify 資料解析失敗：" +
+                error
+            );
+        }
+    }
+
+
+    // =========================================================
+    // BLE Write
+    // =========================================================
+
+    async function sendData() {
+
+        const input =
+            document.getElementById(
+                "sendInput"
             );
 
+
+        const text =
+            input.value;
+
+
+        if (
+            !text ||
+            !bleCharacteristic
+        ) {
 
             return;
         }
 
 
-        log(
-            "找到裝置：" +
-            (
-                bleDevice.name ||
-                "未知名稱"
-            )
-        );
+        try {
+
+            const encoder =
+                new TextEncoder();
 
 
-        // ----------------------------------------------------
-        // Disconnect Event
-        // ----------------------------------------------------
-
-        bleDevice.addEventListener(
-            "gattserverdisconnected",
-            onDisconnected
-        );
-
-
-        // ----------------------------------------------------
-        // GATT Connect
-        // ----------------------------------------------------
-
-        log(
-            "正在連線至 GATT Server..."
-        );
-
-
-        gattServer =
-            await bleDevice.gatt.connect();
-
-
-        log(
-            "GATT Server 連線成功"
-        );
-
-
-        // ----------------------------------------------------
-        // Service
-        // ----------------------------------------------------
-
-        log(
-            "正在取得 BLE Service..."
-        );
-
-
-        const service =
-            await gattServer.getPrimaryService(
-                SERVICE_UUID
+            await bleCharacteristic.writeValue(
+                encoder.encode(text)
             );
 
 
-        log(
-            "BLE Service OK"
-        );
-
-
-        // ----------------------------------------------------
-        // Characteristic
-        // ----------------------------------------------------
-
-        log(
-            "正在取得 BLE Characteristic..."
-        );
-
-
-        bleCharacteristic =
-            await service.getCharacteristic(
-                CHARACTERISTIC_UUID
+            log(
+                "[發送成功] " +
+                text
             );
 
 
-        log(
-            "BLE Characteristic OK"
-        );
+            input.value = "";
 
+        }
 
-        // ----------------------------------------------------
-        // 成功
-        // ----------------------------------------------------
+        catch (error) {
 
-        log(
-            "================================"
-        );
-
-
-        log(
-            ">>> BLE 連線成功！"
-        );
-
-
-        log(
-            ">>> 手機現在可以發送文字"
-        );
-
-
-        log(
-            ">>> ESP32-S3 只接收資料"
-        );
-
-
-        log(
-            "================================"
-        );
-
-
-        updateUI(true);
-
+            log(
+                "發送失敗：" +
+                error
+            );
+        }
     }
 
-    catch (error) {
+
+    // =========================================================
+    // BLE Disconnect
+    // =========================================================
+
+    function disconnectBLE() {
+
+        if (
+            bleDevice &&
+            bleDevice.gatt &&
+            bleDevice.gatt.connected
+        ) {
+
+            log(
+                "正在斷開 BLE..."
+            );
+
+
+            bleDevice.gatt.disconnect();
+        }
+    }
+
+
+    // =========================================================
+    // BLE Disconnected Callback
+    // =========================================================
+
+    function onDisconnected() {
 
         log(
-            "BLE 連線失敗：" +
-            error
+            ">>> ESP32-S3 BLE 已斷線"
         );
 
 
         updateUI(false);
+
+
+        gattServer = null;
+
+        bleCharacteristic = null;
     }
-}
-
-
-// ============================================================
-// Send Text
-//
-// 手機 → ESP32
-// ============================================================
-
-async function sendData() {
-
-
-    const input =
-        document.getElementById(
-            "sendInput"
-        );
-
-
-    const text =
-        input.value.trim();
-
-
-    if (!text) {
-
-        log(
-            "不能發送空白文字"
-        );
-
-
-        return;
-    }
-
-
-    if (!bleCharacteristic) {
-
-        log(
-            "BLE 尚未連線"
-        );
-
-
-        return;
-    }
-
-
-    try {
-
-        const encoder =
-            new TextEncoder();
-
-
-        const data =
-            encoder.encode(text);
-
-
-        // ----------------------------------------------------
-        // BLE WRITE
-        // ----------------------------------------------------
-
-        await bleCharacteristic.writeValue(
-            data
-        );
-
-
-        log(
-            "📤 手機 → ESP32： " +
-            text
-        );
-
-
-        log(
-            "發送成功"
-        );
-
-
-        input.value = "";
-
-    }
-
-    catch (error) {
-
-        log(
-            "發送失敗：" +
-            error
-        );
-    }
-}
-
-
-// ============================================================
-// Send NFC Data
-//
-// NFC → 手機 → ESP32
-// ============================================================
-
-async function sendNFCData() {
-
-
-    if (!nfcContent) {
-
-        log(
-            "沒有 NFC 資料可以發送"
-        );
-
-
-        return;
-    }
-
-
-    if (!bleCharacteristic) {
-
-        log(
-            "BLE 尚未連線"
-        );
-
-
-        return;
-    }
-
-
-    try {
-
-        const encoder =
-            new TextEncoder();
-
-
-        const data =
-            encoder.encode(
-                nfcContent
-            );
-
-
-        await bleCharacteristic.writeValue(
-            data
-        );
-
-
-        log(
-            "📡 NFC → BLE → ESP32"
-        );
-
-
-        log(
-            "發送 NFC 內容：" +
-            nfcContent
-        );
-
-
-        log(
-            "NFC 內容發送成功"
-        );
-
-    }
-
-    catch (error) {
-
-        log(
-            "NFC 內容發送失敗：" +
-            error
-        );
-    }
-}
-
-
-// ============================================================
-// BLE Disconnect
-// ============================================================
-
-function disconnectBLE() {
-
-
-    if (
-        bleDevice &&
-        bleDevice.gatt &&
-        bleDevice.gatt.connected
-    ) {
-
-        log(
-            "正在斷開 BLE..."
-        );
-
-
-        bleDevice.gatt.disconnect();
-    }
-}
-
-
-// ============================================================
-// BLE Disconnected
-// ============================================================
-
-function onDisconnected() {
-
-
-    log(
-        ">>> BLE 連線已中斷"
-    );
-
-
-    gattServer = null;
-
-    bleCharacteristic = null;
-
-
-    updateUI(false);
-}
-
 
 </script>
 
-
 </body>
-
 </html>
